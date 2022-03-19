@@ -35,6 +35,12 @@ def save_frames(frames : list, output_folder : Path):
 def concatenate_frames(list_2d):
     return cv2.vconcat([cv2.hconcat(list_h) for list_h in list_2d])
 
+def resize_image(image, scale):
+    height, width, _ = image.shape
+    new_width = int(width * scale)
+    new_height = int(height * scale)
+    return cv2.resize(image, (new_width, new_height))
+
 def sequence_to_grid(frames):
     """
     Reshape a 1D sequence of frames into a 2D square grid
@@ -48,7 +54,7 @@ def sequence_to_grid(frames):
         row += 1
     return image_grid
 
-def read_files(filenames):
+def read_images_from_files(filenames):
     return [cv2.imread(f) for f in filenames]
 
 def main():
@@ -63,8 +69,9 @@ def main():
     # CONCATENATE FRAMES FROM DISK
     input_folder, output_folder = get_io_folders()
     filenames = [str(f) for f in output_folder.glob('*.jpg')]
-    files = read_files(filenames)
-    cc = concatenate_frames(sequence_to_grid(files))
+    images = [resize_image(image, 0.1) for image in read_images_from_files(filenames)]
+    cc = concatenate_frames(sequence_to_grid(images))
+    import pdb; pdb.set_trace()
     plt.imshow(cc)
     plt.show()
    
