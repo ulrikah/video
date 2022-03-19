@@ -40,8 +40,8 @@ def save_frames(frames : list, output_folder : Path):
         cv2.imwrite(str(output_folder.joinpath(f"frame{str(i)}_{str(t)}.jpg")), frame)
     print(f"Saved {len(frames)} frames to {output_folder}")
     
-def save_image(frame, filename):
-    return cv2.imwrite(str(get_output_folder().joinpath(filename)), frame)
+def save_image(frame, output_path : Path):
+    return cv2.imwrite(str(output_path), frame)
         
 def concatenate_frames(list_2d):
     return cv2.vconcat([cv2.hconcat(list_h) for list_h in list_2d])
@@ -76,8 +76,9 @@ def main():
     images = [resize_image(image, 0.1) for image in frames]
     cc = concatenate_frames(sequence_to_grid(images))
     filename = f"{video_id}-{timestamp()}.png"
-    success = save_image(cc, filename)
-    print(f"Saved {filename}") if success else print(f"Failed to save {filename}")
+    output_path = get_output_folder().joinpath(filename)
+    success = save_image(cc, output_path)
+    print(f"Saved {str(output_path)}") if success else print(f"Failed to save {str(output_path)}")
 
 if __name__ == "__main__":
     main()
