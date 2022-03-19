@@ -1,4 +1,3 @@
-import pdb
 import cv2
 from pathlib import Path
 
@@ -14,7 +13,6 @@ def frames_from_video(video_path) -> list:
     frames = []
     while True:
         ret, frame = cap.read()
-        # cv2.imwrite("frame%d.jpg" % ret, frame)     # save frame as JPEG file      
         if ret:
             frames.append(frame)
         else:
@@ -56,7 +54,6 @@ def sequence_to_grid(frames):
     """
     Reshape a 1D sequence of frames into a 2D square grid
     """
-    # TODO: resize all frames to a certain size
     dim = int(math.sqrt(len(frames)))
     image_grid = []
     row = 0
