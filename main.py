@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import time
 import math
 
+def timestamp():
+    return time.strftime("%Y%m%d-%H%M%S")
 
 def frames_from_video(video_path) -> list:
     cap = cv2.VideoCapture(video_path)
@@ -19,12 +21,18 @@ def frames_from_video(video_path) -> list:
             break
     return frames
 
-def get_io_folders():
+def get_input_folder():
     input_folder = Path('assets/input')
-    output_folder = Path('assets/output')
     input_folder.mkdir(exist_ok=True)
+    return input_folder
+
+def get_output_folder():
+    output_folder = Path('assets/output')
     output_folder.mkdir(exist_ok=True)
-    return input_folder, output_folder
+    return output_folder
+
+def get_all_jpgs_in_path(folder : Path):
+    return [str(f) for f in folder.glob('*.jpg')]
 
 def save_frames(frames : list, output_folder : Path):
     t = int(time.time())
@@ -32,6 +40,9 @@ def save_frames(frames : list, output_folder : Path):
         cv2.imwrite(str(output_folder.joinpath(f"frame{str(i)}_{str(t)}.jpg")), frame)
     print(f"Saved {len(frames)} frames to {output_folder}")
     
+def save_image(frame, filename):
+    return cv2.imwrite(str(get_output_folder().joinpath(filename)), frame)
+        
 def concatenate_frames(list_2d):
     return cv2.vconcat([cv2.hconcat(list_h) for list_h in list_2d])
 
@@ -58,23 +69,15 @@ def read_images_from_files(filenames):
     return [cv2.imread(f) for f in filenames]
 
 def main():
-    # SAVE VIDEO TO FRAMES
-    # input_folder, output_folder = get_io_folders()
-    # video_path = input_folder.joinpath('big_buck_bunny_720p_5mb.mp4')
-    # frames = frames_from_video(str(video_path))
-    # save_frames(frames, output_folder)[]
-
-
-
-    # CONCATENATE FRAMES FROM DISK
-    input_folder, output_folder = get_io_folders()
-    filenames = [str(f) for f in output_folder.glob('*.jpg')]
-    images = [resize_image(image, 0.1) for image in read_images_from_files(filenames)]
+    video_id ="havn"
+    input_folder = get_input_folder()
+    video_path = input_folder.joinpath(f"{video_id}.mp4")
+    frames = frames_from_video(str(video_path))
+    images = [resize_image(image, 0.1) for image in frames]
     cc = concatenate_frames(sequence_to_grid(images))
-    import pdb; pdb.set_trace()
-    plt.imshow(cc)
-    plt.show()
-   
+    filename = f"{video_id}-{timestamp()}.png"
+    success = save_image(cc, filename)
+    print(f"Saved {filename}") if success else print(f"Failed to save {filename}")
 
 if __name__ == "__main__":
     main()
