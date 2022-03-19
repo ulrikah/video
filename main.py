@@ -1,10 +1,10 @@
+import pdb
 import cv2
 from pathlib import Path
-from matplotlib import image
-import matplotlib.pyplot as plt
 
 import time
 import math
+import argparse
 
 def timestamp():
     return time.strftime("%Y%m%d-%H%M%S")
@@ -68,8 +68,20 @@ def sequence_to_grid(frames):
 def read_images_from_files(filenames):
     return [cv2.imread(f) for f in filenames]
 
+def verify_file_path(filepath : str):
+    if Path(filepath).is_file():
+        return filepath
+    else:
+        raise IOError(f"File {filepath} does not exist")
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--path', type=verify_file_path)
+    return parser.parse_args()
+
 def main():
-    video_id ="havn"
+    args = parse_args()
+    video_id = Path(args.path).stem
     input_folder = get_input_folder()
     video_path = input_folder.joinpath(f"{video_id}.mp4")
     frames = frames_from_video(str(video_path))
