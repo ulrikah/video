@@ -1,10 +1,10 @@
-from faulthandler import is_enabled
-import pdb
 import cv2
 from pathlib import Path
+from matplotlib import image
 import matplotlib.pyplot as plt
 
 import time
+import math
 
 
 def frames_from_video(video_path) -> list:
@@ -35,17 +35,18 @@ def save_frames(frames : list, output_folder : Path):
 def concatenate_frames(list_2d):
     return cv2.vconcat([cv2.hconcat(list_h) for list_h in list_2d])
 
-def preprocess_frames(frames):
+def sequence_to_grid(frames):
     """
-    Resize frames and transform then into concatenable list of lists
+    Reshape a 1D sequence of frames into a 2D square grid
     """
     # TODO: resize all frames to a certain size
-    is_even = len(frames) % 2 == 0
-    middle = len(frames) // 2
-    if is_even:
-        return [frames[:middle], frames[middle:]]
-    else:
-        return [frames[:middle], frames[middle:len(frames) - 1]]
+    dim = int(math.sqrt(len(frames)))
+    image_grid = []
+    row = 0
+    for _ in range(dim):
+        image_grid.append(frames[row * dim: (row + 1) * dim])
+        row += 1
+    return image_grid
 
 def read_files(filenames):
     return [cv2.imread(f) for f in filenames]
@@ -63,7 +64,7 @@ def main():
     input_folder, output_folder = get_io_folders()
     filenames = [str(f) for f in output_folder.glob('*.jpg')]
     files = read_files(filenames)
-    cc = concatenate_frames(preprocess_frames(files))
+    cc = concatenate_frames(sequence_to_grid(files))
     plt.imshow(cc)
     plt.show()
    
