@@ -78,9 +78,9 @@ def parse_args():
 
 def main():
     args = parse_args()
-    video_id = Path(args.path).stem
-    input_folder = get_input_folder()
-    video_path = input_folder.joinpath(f"{video_id}.mp4")
+    # video_id = Path(args.path).stem
+    video_id = Path("/Users/ulrikah/Downloads/videoer-siden-jeg-kom-til-paris/20230903_230717.mp4")
+    video_path = video_id if video_id.is_file() else get_input_folder().joinpath(f"{video_id}.mp4")
     frames = frames_from_video(str(video_path))
     images = [resize_image(image, 0.1) for image in frames]
     cc = concatenate_frames(sequence_to_grid(images))
