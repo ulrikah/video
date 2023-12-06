@@ -112,4 +112,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-"my_concatenation_20231206-005026.mp4"
